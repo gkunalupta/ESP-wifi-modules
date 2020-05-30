@@ -1,0 +1,72 @@
+#include <uarts.h>
+#include <avr/delay.h>
+int main(void)
+{    char buff[100];
+	char str[30];
+	//UART_Init0();
+	UART_Init3();		//for printing on serial monitor
+	UART_Init1();       ///for esp bauddrate is selected 115200
+ //printString3("******************hellow*****************");
+ printString3("\n");
+
+	while(1)
+	{
+	   printString3("type a command to send  \n");
+	   printString1("ATE1\r\n");   //sending command to esp8266
+	   printString3("ATE1 \n");   //printing command to terminal screen
+	   printString3("receiving  response \n");
+
+	//UART_TxChar3(rxstring3(buff));
+		 				for(int i=0;i<20;i++)
+                     		{   printString3("\nWaiting to receive data \n");
+								 buff[i]=UART_RxChar1();
+								printString3(" received data \n");
+                          	UART_TxChar3(buff[i]);
+                              	_delay_ms(1000);
+
+                            }
+	}}
+
+	/* function definations of uart functions which i used
+	void printint3(int myint[])
+{
+
+	uint16_t i = 0;
+	while (myint[i])
+	{
+		UART_TxChar3(myint[i]);
+		i++;
+	}
+
+}
+
+void UART_TxChar3(char  data)
+{
+	while((UCSR3A & (1<<UDRE3))==0);
+	UDR3 = data;
+
+}
+
+void printString1(  char *myString)      /////to print any string
+{
+	char i = 0;
+	while (myString[i])
+	{
+		UART_TxChar1(myString[i]);
+		i++;
+	}
+}
+
+int UART_RxChar1()
+{
+ 	printString3(" UCSR1A value before receiving data   \n");
+ 	bit3(UCSR1A);
+	printString3(" \n");
+
+    while( !(UCSR1A & (1<<RXC1)));
+
+ 	printString3(" UCSR1A value after receiving data  \n");
+ 	bit3(UCSR1A);
+ 	printString3("\n");
+	return UDR1;
+}
