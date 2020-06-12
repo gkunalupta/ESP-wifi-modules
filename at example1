@@ -1,0 +1,114 @@
+
+#include <uarts.h>
+#include <avr/delay.h>
+#include <avr/interrupt.h>
+  char buff[100], huss[100];
+  char str[30];
+  int m=0;
+ISR(USART0_RX_vect)
+{   //_delay_ms(100);
+// printString0("value of uscra before reading UDRE \n ");
+// 	bit0(UCSR0A);
+	char data;
+	data=UDR0;
+// 	printString0("value of uscra after reading UDRE \n ");
+// 	bit0(UCSR0A);
+	if(data!='>')
+	{
+		str[m]=data;
+		UART_TxChar0(str[m]);
+		m++;
+		
+	}    else
+	{
+		str[m]='\0';
+		printString0(str);
+		m=0;
+	}
+	
+}
+ISR(USART1_RX_vect)
+{ 
+	
+   //_delay_ms(100);
+		printString0("\nvalue of uscra before reading UDRE \n ");
+		bit0(UCSR1A);
+		char data;
+		data=UDR1;
+		printString0(" \nvalue of uscra after reading UDRE \n ");
+		bit0(UCSR1A);
+		printString0("\n");
+		if(data!='>')
+		{
+			str[m]=data;
+			UART_TxChar0(str[m]);
+			m++;
+
+		}    else
+		{
+			str[m]='\0';
+			printString0(str);
+			m=0;
+		}
+
+	
+/*
+		char rx_byte;
+        
+		// We only ever get here when an RXC interrupt has occurred;
+		// Therefore, we know that there must be at least 1 byte in UDR
+
+		// get the 1st byte
+		rx_byte = UDR1;
+        UART_TxChar0(rx_byte);
+		// put it into the ring buffer
+
+		// there *might* be a 2nd byte
+
+		if( UCSR1A & (1<<RXC1) )
+		{
+			// There is a 2nd byte!
+
+			// get the 2nd byte
+			rx_byte = UDR1;
+UART_TxChar0(rx_byte);
+			// put it into the ring buffer
+
+		}
+	
+	
+	*/
+		
+}
+int main(void)
+{  
+	UART_Init0();  
+	//UART_Init3();		//for printing on serial monitor				
+UART_Init1();       ///for esp bauddrate is selected 115200
+ printString0("******************hellow*****************");
+ printString0("\n");
+  printString0("receiving  response \n");
+
+//printString1("AT\r\n");   //sending command to esp8266
+
+ sei();			
+
+//printString1("AT\r\n");   
+	
+	while(1)
+	{    
+	  //printString0("Z\n");
+	   
+	   
+	   printString1("AT\r\n");  
+	   // /----------------000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000printString1("AT\r\n");   //sending command to esp8266/.8
+       // 	   printString0("ATE1 \n");   //printing command to terminal screen
+        // 	   printString0("receiving  response \n");
+UART_at1(str);
+// printString0(str);
+// i=0;
+printString0(str);
+rxstring0(str);
+     }
+}
+
