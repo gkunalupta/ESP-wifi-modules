@@ -13,7 +13,7 @@ These wifi modules have two layers in memory for programming them . Firmware cod
  Espriff Systems releases its official SDK . Company releases its 2 official SDK that are Non-OS SDK and RTOS SDK.   RTOS SDK runs on Linux FreeRTOS, so windows users if want to use official SDK then Virtual Machine can be Used . NON-OS SDK Supports the IOT_Demo application code and AT Version.
  
  
-To refer to official SDK refer this link https://www.espressif.com/sites/default/files/documentation/2a-esp8266-sdk_getting_started_guide_en.pdf
+To refer to official SDK  and upload AT version Firmware , refer this link https://www.espressif.com/sites/default/files/documentation/2a-esp8266-sdk_getting_started_guide_en.pdf
 
 The ESP8266 can be programmed in C++ and python both . Many third party users have Released its SDK which has different firmware code in python language as well.
 https://en.wikipedia.org/wiki/ESP8266#SDKs
@@ -23,5 +23,22 @@ These modules also can be programmed using the ARDUINO IDE platform. Many librar
 # AT commands
 AT commands are like instructions which can be given to these WiFi chips from the host through Serial Communication . Host here can be laptop, any microcontroller which send the At commands through UART serial communication and ESP8266 give the responses for these commands in the same Communication channel and session. 
 AT commands Firmware is released by two companies. Espriff Systems and AI thinker lab.
-So Esp8266 can be interfaced to any controller through Serial Communication UART which sends the AT commands to these chips and Esp8266 give the responses of these commands back to HOST.
+So Esp8266 can be interfaced to any controller through Serial Communication UART which sends the AT commands to these chips and Esp8266 give the responses of these commands back to HOST. 
+Instruction Set of AT commands
+https://www.espressif.com/sites/default/files/documentation/4a-esp8266_at_instruction_set_en.pdf
+AT firmware
+https://www.electrodragon.com/w/ESP8266_Firmware
+ESp8266  software Programmer 
+https://github.com/nodemcu/nodemcu-flasher
+
+# My objective
+
+So my concern is to Develop My own library for interacting with ESP32/8266 in embedded c language Using UART Registers   of AVR controllers and in Arduino language using Hardware Serial library For UART Serial communication for sharpening my skills in firmware development and embedded c Programing .
+
+In doing so and getting to know the analogy of how these wifi microchips work , i get to know about computer networks,OSI model, TCP/IP stack, URL, DNS, IP address , MAC address, Network suite  and many such things related to computer network . I have made a doc also realted to all these things for my reference .
+https://docs.google.com/document/d/1A9m5SwrN4m2vEBqYjRrNjNkvEkY6Z_rFtnfEwydu-BI/edit?usp=sharing
+
+
+
+
 
