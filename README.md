@@ -31,6 +31,23 @@ https://www.electrodragon.com/w/ESP8266_Firmware
 ESp8266  software Programmer 
 https://github.com/nodemcu/nodemcu-flasher
 
+Carriage return in c -
+
+\b (backspace) Moves the active position to the previous position on the current line. If the active position is at the initial position of a line, the behavior of the display device is unspecified.
+\n (new line) Moves the active position to the initial position of the next line.
+\r (carriage return) Moves the active position to the initial position of the current line.
+
+
+
+I have sent the AT commands to the terminal screen and the work perfectly.
+
+so reading from the URL's which u provide i conclude i have some confusions which if you can make clear will be very grateful.
+1) when sending AT commands in terminal window we opt for BOTH NL and CR ....so that means
+      a) that when we send command "AT" from serial monitor it is sent as  "AT\r\n" and thus esp respond to it with "OK".
+       b) or We also get the response from esp8266 with both NL and CR that is we get OK as "OK\r\n".
+2) if a send AT command by selecting Carriage return (CR) only then no response is received from esp8266 on serial monitor ... so does that mean when sending AT commands i have to send both  \r and \n with the command. So that command is recognised by the esp8266
+
+
 # My objective
 
 So my concern is to Develop My own library for interacting with ESP32/8266 in embedded c language Using UART Registers   of AVR controllers and in Arduino language using Hardware Serial library For UART Serial communication for sharpening my skills in firmware development and embedded c Programing .
