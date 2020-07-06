@@ -59,3 +59,27 @@ https://docs.google.com/document/d/1A9m5SwrN4m2vEBqYjRrNjNkvEkY6Z_rFtnfEwydu-BI/
 
 
 
+links
+
+1) espriff official flash tool --> file:///C:/Users/kunal/Desktop/work/esp8266_toolchains/esp8266toolkit%20by%20espriff/esp8266flashtool/flash_download_tool_v3.8.5/flash_download_tool_v3.8.5/doc/Flash_Download_Tool__en.pdf
+
+2)TCP/UDP wifipassthrough at commands by espriff -->
+file:///C:/Users/kunal/AppData/Local/Temp/Temp1_TCP&UDP_throuthpass_EN.zip/TCP&UDP_throuthpass_EN/TCP_and_UDP_UART_Passthrough_Test_Demonstration__EN.pdf
+
+3) espriff esp8266 getting started -->
+https://www.espressif.com/sites/default/files/documentation/2a-esp8266-sdk_getting_started_guide_en.pdf
+
+
+4) esp8266 NON-OS SDK github -->
+https://github.com/espressif/ESP8266_NONOS_SDK
+
+
+5) esp8266 miscellenous -->
+https://www.espressif.com/support/download/other-tools
+https://www.espressif.com/en/support/documents/technical-documents?keys=&field_type_tid%5B%5D=14
+
+
+6) esp8266 AT commands latest-->
+https://www.espressif.com/sites/default/files/documentation/4a-esp8266_at_instruction_set_en.pdf
+
+
