@@ -83,3 +83,8 @@ https://www.espressif.com/en/support/documents/technical-documents?keys=&field_t
 https://www.espressif.com/sites/default/files/documentation/4a-esp8266_at_instruction_set_en.pdf
 
 
+
+7) esp8266 non-os sdk api-->
+https://www.espressif.com/sites/default/files/documentation/2c-esp8266_non_os_sdk_api_reference_en.pdf
+
+
