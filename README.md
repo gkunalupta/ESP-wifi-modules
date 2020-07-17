@@ -94,3 +94,32 @@ https://arduino-esp8266.readthedocs.io/en/latest/
 
 9) esp8266 nodemcu -->
 https://nodemcu.readthedocs.io/en/latest/#nodemcu-documentation
+
+
+
+
+
+
+
+AT commands
+1) for thingspeak-->
+(https://api.thingspeak.com/update?api_key=K86PTN9OPANWW8MF&field1=0)
+AT+CIPSTART="TCP","api.thingspeak.com",80  (with \r\n)
+AT+CIPSEND=47
+GET /update?api_key=K86PTN9OPANWW8MF&field1=0
+
+2) for weather API-->
+(https://api.openweathermap.org/data/2.5/weather?q=delhi&appid=885e9149105e8901c9809ac018ce8658)
+AT+CIPSTART="TCP","api.openweathermap.org",80
+AT+CIPSEND=70
+GET /data/2.5/weather?q=delhi&appid=885e9149105e8901c9809ac018ce8658
+
+
+3) for thinksfinity -->
+AT+CIPSTART="TCP","innovations.thinkfinitylabs.com",80
+AT+CIPSEND=90
+GET /test/comm/sens.php?key=f46fa009d3c6902ea2a805567c7ed4&val1=01&val2=02&val3=03&val4=04
+
+
+
+
