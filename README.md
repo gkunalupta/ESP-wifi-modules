@@ -96,7 +96,9 @@ https://arduino-esp8266.readthedocs.io/en/latest/
 https://nodemcu.readthedocs.io/en/latest/#nodemcu-documentation
 
 
+10)   https://www.electronicwings.com/nodemcu/nodemcu-development-kitboard
 
+     https://electrosome.com/flashing-espressif-nodemcu-firmware-esp8266/#:~:text=The%20ESP8266%20Module%20comes%20with%20an%20AT%20Command,the%20type%20Non-OS%20SDK.%20ESP8266%20Latest%20Firmware-Flashing%20Firmware
 
 
 
