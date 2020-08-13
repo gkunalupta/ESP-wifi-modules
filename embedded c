@@ -1,72 +1,373 @@
-#include <uarts.h>
-#include <avr/delay.h>
-int main(void)
-{    char buff[100];
-	char str[30];
-	//UART_Init0();
-	UART_Init3();		//for printing on serial monitor
-	UART_Init1();       ///for esp bauddrate is selected 115200
- //printString3("******************hellow*****************");
- printString3("\n");
 
+#include <uarts.h>
+#include <avr/interrupt.h>
+#include <string.h>
+#include <millis.h>
+
+
+  char buff[100], huss[100];
+  char str[30];
+  int m=0;
+  #include <stdio.h>
+  #define debug false
+  
+  
+  
+  
+  
+typedef enum esp8266_cmd_rsp {
+	ESP8266_CMD_BAD = -5,
+	ESP8266_RSP_MEMORY_ERR = -4,
+	ESP8266_RSP_FAIL = -3,
+	ESP8266_RSP_UNKNOWN = -2,
+	ESP8266_RSP_TIMEOUT = -1,
+	ESP8266_RSP_SUCCESS = 0
+};
+  // USART Receiver buffer
+  #define RX_BUFFER_SIZE_UART0 32
+  uint8_t Rx_Buffer_UART0[RX_BUFFER_SIZE_UART0+1]; // character array (buffer)
+  uint8_t RX_Wr_Index_UART0; //index of next char to be put into the buffer  // head
+  uint8_t RX_Rd_Index_UART0; //index of next char to be fetched from the buffer    //tail
+  uint8_t RX_Counter_UART0; //a total count of characters in the buffer
+  bool RX_Buffer_Overflow_UART0; // This flag is set on USART Receiver
+  // buffer overflow
+ISR(USART0_RX_vect)
+{  
+	
+	       char rx_byte;
+	       
+	       // We only ever get here when an RXC interrupt has occurred;
+	       // Therefore, we know that there must be at least 1 byte in UDR
+
+	       // get the 1st byte
+	       rx_byte = UDR0;
+	       UART_TxChar0(rx_byte);
+	       Rx_Buffer_UART0[RX_Wr_Index_UART0]= rx_byte;   /* put received char in buffer */
+	       if(++RX_Wr_Index_UART0 > RX_BUFFER_SIZE_UART0)
+	       RX_Wr_Index_UART0 = 0;
+	       if(++RX_Counter_UART0 > RX_BUFFER_SIZE_UART0) /* keep a character count */
+	       { /* overflow check.. */
+		       RX_Counter_UART0 = RX_BUFFER_SIZE_UART0; /* if too many chars came */
+		       RX_Buffer_Overflow_UART0 = 1; /* in before they could be used */
+		       } /* that could cause an error!! */
+
+	
+}
+
+char getchar_UART0()
+{
+	char c;
+	while(RX_Counter_UART0 == 0) /* wait for a character... */
+	;
+	c = Rx_Buffer_UART0[RX_Rd_Index_UART0]; /* get one from the buffer..*/
+	if(++RX_Rd_Index_UART0 > RX_BUFFER_SIZE_UART0) /* wrap the pointer */
+	RX_Rd_Index_UART0 = 0;
+	if(RX_Counter_UART0)
+	RX_Counter_UART0--; /* keep a count (buffer size) */
+	return c;
+	
+}
+
+
+// USART Receiver buffer
+#define RX_BUFFER_SIZE_UART1 255
+uint8_t Rx_Buffer_UART1[RX_BUFFER_SIZE_UART1]; // character array (buffer)
+uint8_t RX_Wr_Index_UART1 =0; //index of next char to be put into the buffer  // head
+uint8_t RX_Rd_Index_UART1=0; //index of next char to be fetched from the buffer    //tail
+uint8_t RX_Counter_UART1=0; //a total count of characters in the buffer
+uint8_t RX_No_of_byte_UART1=0;
+bool RX_Buffer_Overflow_UART1; // This flag is set on USART Receiver // buffer overflow
+char rx_byte;
+int a=0;
+ISR(USART1_RX_vect)
+{ 
+	    
+		rx_byte = UDR1;
+        Rx_Buffer_UART1[RX_Wr_Index_UART1]= rx_byte;   /* put received char in buffer */
+		if(++RX_Wr_Index_UART1 > RX_BUFFER_SIZE_UART1)
+		      RX_Wr_Index_UART1 = 0;
+		if(++RX_Counter_UART1 > RX_BUFFER_SIZE_UART1) /* keep a character count */
+		   {
+			                                          /* overflow check.. */
+			 RX_Counter_UART1 = RX_BUFFER_SIZE_UART1; /* if too many chars came */
+			 RX_Buffer_Overflow_UART1 = 1;            /* in before they could be used */
+		   }                                          /* that could cause an error!! */
+       RX_No_of_byte_UART1=RX_Counter_UART1 ;
+		//UART_TxChar0(rx_byte);
+		//a++;
+}
+/* reading from interrupt buffer*/
+char  getchar_UART1()             // <--->   Serial.read()
+{
+	
+	
+	char c;
+
+	c = Rx_Buffer_UART1[RX_Rd_Index_UART1]; /* get one from the buffer..*/
+	
+	if(++RX_Rd_Index_UART1 > RX_BUFFER_SIZE_UART1) /* wrap the pointer */
+	RX_Rd_Index_UART1 = 0;
+	if(RX_Counter_UART1)
+	RX_Counter_UART1--; /* keep a count (buffer size) */
+	return c ;//return char *
+	//printString0("n \n ");
+}
+
+char RX_DATA_UART1[RX_BUFFER_SIZE_UART1];
+void getstring_UART1()
+{     
+	   // printString0(" Number of characters received : ");
+		//decimel0(RX_No_of_byte_UART1);
+		//printString0("\n");
+		uint8_t x=0;
+		memset(RX_DATA_UART1, '\0',RX_BUFFER_SIZE_UART1);
+		while (RX_Counter_UART1)
+		{   
+			RX_DATA_UART1[x]= getchar_UART1();
+			x++;
+		}
+		printString0(RX_DATA_UART1);
+		_delay_ms(1000);
+		
+}
+char* search_buffer(const char* search)
+{
+	char* p;
+	int bufferlen = strlen((const char * )RX_DATA_UART1);
+	if(bufferlen < RX_BUFFER_SIZE_UART1)
+	p= strstr ((const char *)RX_DATA_UART1,search);
+	//printString0(p);
+	return (p);
+}
+  int RFR_UART1(const char * rsp, unsigned int timeout)
+{   
+	unsigned long timeIn = millis();	// Timestamp coming into function
+    uint8_t received = 0;
+	memset(RX_DATA_UART1, '\0',RX_BUFFER_SIZE_UART1);
+	
+	
+    //printString0(" Number of characters received : ");
+	//decimel0(RX_No_of_byte_UART1);
+	//printString0("\n");
+	
+	while (millis() - timeIn < timeout) // While we haven't timed out
+	{         
+		      //decimel0(millis());
+			 // printString0("\n");
+			  //UART_TxChar0(a);
+			  		      if(RX_Counter_UART1)
+	             {
+		                RX_DATA_UART1[received]= getchar_UART1();
+		                received++;
+		                if(search_buffer(rsp))
+						{
+						//printString0(search_buffer(rsp));
+                        return 1;
+						}
+				  }
+	}
+	// printString0(" Number of characters received : ");
+	 //decimel0(received);
+	 printString0("\n");
+        if (received > 0) // If we received any characters
+        return 0; // Return unkown response error code
+        else // If we haven't received any characters
+        return 2; // Return the timeout error code
+    
+}
+
+void send_command(const char * command)
+{
+	printString1(command);
+	
+}
+
+void esp8266_getmode()
+{
+	send_command("AT+CWMODE?\r\n");
+	int rsp = RFR_UART1("OK", 1000);
+	if(rsp==1)
+	{
+		//printString0("command is successfully send\n");
+		char * p = strchr(RX_DATA_UART1, ':');
+		if(p!=NULL)
+		     {
+			      char mode = *(p+1);
+				  int num = mode-48;
+			      if(num==1) printString0("Station mode selected\n");
+			      if(num==2) printString0("SoftAP mode selected\n");
+			      if(num==3) printString0("SoftAP+Station mode selected\n");
+		      }
+	}
+	    else
+	{
+		printString0("Error in receiving command (check the command) or timeout has happened\n");
+	    printString0(RX_DATA_UART1);
+	}
+}
+void esp8266_connectiontype()
+{
+			   send_command("AT+CIPMUX?\r\n");
+			   int rsp = RFR_UART1("OK", 1000);
+			   if(rsp==1)
+			   {
+				  // printString0("command is successfully send\n");
+				   char * p = strchr(RX_DATA_UART1, ':');
+				   if(p!=NULL)
+				       {
+					        char mode = *(p+1);
+					        int num = mode-48;
+					        if(num==0) printString0("Single connection - configured as client\n");
+					        if(num==1) printString0("multiple connection - configured as server\n");
+				        }
+				   
+				}
+				 else
+				 {
+					 printString0("Error in receiving response (check the command) or timeout has happened\n");
+				     printString0(RX_DATA_UART1);
+				 }
+}
+void esp8266_getAP()
+{              char ssid[20];
+	           send_command("AT+CWJAP?\r\n");
+	           int rsp = RFR_UART1("OK", 1000);
+	           if(rsp==1)
+	           {
+		          // printString0("command is successfully send\n");
+		           if (strstr(RX_DATA_UART1, "No AP") != NULL)
+		           printString0("No AP is connected\n");
+		           char * p = strstr(RX_DATA_UART1,"+CWJAP:");
+				  //printString0(p);
+		           if(p!=NULL)
+		                {  // printString0("kun\n");
+			                   p +=  strlen("+CWJAP") +2;
+					           //printString0(p);
+			                   char * q=strchr(p,'"');
+			                   strncpy(ssid,p,q-p);
+					           printString0("Connected to Wifi:");
+			                   printString0(ssid);
+							   printString0("\n");
+					   
+		                 }
+		           
+	           }
+			   else
+			   { 
+				   printString0("Error in receiving response (check the command ) or timeout has happened\n");
+	              printString0(RX_DATA_UART1);
+			   }
+}
+void esp8266_disconnect()
+{
+	
+	send_command("AT+CWQAP\r\n");
+	int rsp = RFR_UART1("OK",1000);
+		   if(rsp==1)
+		   {
+			  // printString0(RX_DATA_UART1);
+			   if (strstr(RX_DATA_UART1, "WIFI DISCONNECT") == NULL)
+			   printString0("WIFI is already disconnected \n");
+			   else
+			   printString0("WIFI is disconnected \n");
+		   }
+		   			   else
+		   			   {
+			   			   printString0("Error in receiving response (check the command ) or timeout has happened\n");
+			   			    printString0(RX_DATA_UART1);
+		   			   }
+}
+void esp8266_setAP()
+{
+			   char setAP[40];
+			   char ssid[20] ="JioFiber 2.4ghz";
+			   char pass[20] ="Mansi5481";
+			   char bua[25], buc[25];
+			   snprintf(setAP, sizeof(setAP), "AT+CWJAP=\"%s\",\"%s\"\r\n",ssid,pass);
+			  // printString0(setAP);
+			   send_command(setAP);
+			  // getstring_UART1();
+			   int rsp = RFR_UART1("OK",6000);
+			  //int rsp=2;
+			  printString0(RX_DATA_UART1);
+			   if(rsp==1)
+			   {
+				   // printString0(RX_DATA_UART1);
+				   if (strstr(RX_DATA_UART1, "WIFI DISCONNECT") == NULL)
+				   {
+					   sprintf(bua,"WIFI is  connected to  %s", ssid);
+					   printString0(bua);
+				   }
+				   else
+				   {
+					   sprintf(buc, "WIFI is already connected to %s",ssid);
+					   printString0(buc);
+				   }
+			   }
+}
+int main(void)
+{  
+	init_millis(16000000UL); //frequency the atmega328p is running at
+   	UART_Init0();
+	UART_Init1();       ///for esp baudrate is selected 115200
+	printString0("******************hellow*****************");
+	printString0("\n");
+
+    sei();
+	
+int c=0;
 	while(1)
 	{
-	   printString3("type a command to send  \n");
-	   printString1("ATE1\r\n");   //sending command to esp8266
-	   printString3("ATE1 \n");   //printing command to terminal screen
-	   printString3("receiving  response \n");
-
-	//UART_TxChar3(rxstring3(buff));
-		 				for(int i=0;i<20;i++)
-                     		{   printString3("\nWaiting to receive data \n");
-								 buff[i]=UART_RxChar1();
-								printString3(" received data \n");
-                          	UART_TxChar3(buff[i]);
-                              	_delay_ms(1000);
-
-                            }
-	}}
-
-	/* function definations of uart functions which i used
-	void printint3(int myint[])
-{
-
-	uint16_t i = 0;
-	while (myint[i])
-	{
-		UART_TxChar3(myint[i]);
-		i++;
+		
+		if(c<0)
+		{  
+           esp8266_getmode();
+		  esp8266_connectiontype();
+		  esp8266_getAP();
+           esp8266_disconnect();
+		   //esp8266_setAP();
+           c++;
+		   
+		}
+		
+		if(c<1)
+		{
+			send_command("AT+GMR\r\n");
+			getstring_UART1();
+			
+			//printString0(RFR_UART1("OK", 1000));
+			//printString0("\n");
+			_delay_ms(100);
+			
+			send_command("AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80\r\n");
+			//printString1("AT+CIPSTART=\"TCP\",\"api.openweathermap.org\",80\r\n");
+			getstring_UART1();
+		    //UART_TxChar0(RFR_UART1("ERROR", 1000));
+			//printString0("\n");
+			//_delay_ms(100);
+			printString0(RX_DATA_UART1);
+			
+			send_command("AT+CIPSEND=47\r\n");
+			//printString1("AT+CIPSEND=70\r\n");
+			getstring_UART1();
+			//UART_TxChar0(RFR_UART1("OK", 1000));
+			//printString0("\n");
+			//_delay_ms(100);
+			
+			
+			
+			send_command("GET /update?api_key=K86PTN9OPANWW8MF&field1=0\r\n");
+			//printString1("GET /data/2.5/weather?q=delhi&appid=885e9149105e8901c9809ac018ce8658\r\n");
+			
+			UART_TxChar0(RFR_UART1("CLOSED", 2000));
+			printString0("\n");
+			_delay_ms(100);
+			printString0(RX_DATA_UART1);
+			
+			c++;
+			
+		}
 	}
 
 }
 
-void UART_TxChar3(char  data)
-{
-	while((UCSR3A & (1<<UDRE3))==0);
-	UDR3 = data;
-
-}
-
-void printString1(  char *myString)      /////to print any string
-{
-	char i = 0;
-	while (myString[i])
-	{
-		UART_TxChar1(myString[i]);
-		i++;
-	}
-}
-
-int UART_RxChar1()
-{
- 	printString3(" UCSR1A value before receiving data   \n");
- 	bit3(UCSR1A);
-	printString3(" \n");
-
-    while( !(UCSR1A & (1<<RXC1)));
-
- 	printString3(" UCSR1A value after receiving data  \n");
- 	bit3(UCSR1A);
- 	printString3("\n");
-	return UDR1;
-}
