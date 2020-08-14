@@ -1,4 +1,5 @@
 
+
 #include <uarts.h>
 #include <avr/interrupt.h>
 #include <string.h>
@@ -116,9 +117,9 @@ char  getchar_UART1()             // <--->   Serial.read()
 char RX_DATA_UART1[RX_BUFFER_SIZE_UART1];
 void getstring_UART1()
 {     
-	   // printString0(" Number of characters received : ");
-		//decimel0(RX_No_of_byte_UART1);
-		//printString0("\n");
+	   printString0(" Number of characters received : ");
+		decimel0(RX_No_of_byte_UART1);
+		printString0("\n");
 		uint8_t x=0;
 		memset(RX_DATA_UART1, '\0',RX_BUFFER_SIZE_UART1);
 		while (RX_Counter_UART1)
@@ -127,7 +128,7 @@ void getstring_UART1()
 			x++;
 		}
 		printString0(RX_DATA_UART1);
-		_delay_ms(1000);
+		//_delay_ms(1000);
 		
 }
 char* search_buffer(const char* search)
@@ -152,23 +153,16 @@ char* search_buffer(const char* search)
 	
 	while (millis() - timeIn < timeout) // While we haven't timed out
 	{         
-		      //decimel0(millis());
-			 // printString0("\n");
-			  //UART_TxChar0(a);
+                     
 			  		      if(RX_Counter_UART1)
 	             {
 		                RX_DATA_UART1[received]= getchar_UART1();
+						//UART_TxChar0(RX_DATA_UART1[received]);
 		                received++;
-		                if(search_buffer(rsp))
-						{
-						//printString0(search_buffer(rsp));
-                        return 1;
-						}
+		                if(search_buffer(rsp)) return 1;
+						
 				  }
 	}
-	// printString0(" Number of characters received : ");
-	 //decimel0(received);
-	 printString0("\n");
         if (received > 0) // If we received any characters
         return 0; // Return unkown response error code
         else // If we haven't received any characters
@@ -181,7 +175,7 @@ void send_command(const char * command)
 	printString1(command);
 	
 }
-
+int num=0;
 void esp8266_getmode()
 {
 	send_command("AT+CWMODE?\r\n");
@@ -193,7 +187,7 @@ void esp8266_getmode()
 		if(p!=NULL)
 		     {
 			      char mode = *(p+1);
-				  int num = mode-48;
+				   num = mode-48;
 			      if(num==1) printString0("Station mode selected\n");
 			      if(num==2) printString0("SoftAP mode selected\n");
 			      if(num==3) printString0("SoftAP+Station mode selected\n");
@@ -201,7 +195,7 @@ void esp8266_getmode()
 	}
 	    else
 	{
-		printString0("Error in receiving command (check the command) or timeout has happened\n");
+		//printString0("Error in receiving command (check the command) or timeout has happened\n");
 	    printString0(RX_DATA_UART1);
 	}
 }
@@ -224,94 +218,211 @@ void esp8266_connectiontype()
 				}
 				 else
 				 {
-					 printString0("Error in receiving response (check the command) or timeout has happened\n");
+					// printString0("Error in receiving response (check the command) or timeout has happened\n");
 				     printString0(RX_DATA_UART1);
 				 }
 }
+void esp8266_setAP(const char * ssid, const char * pass)
+{
+	char setAP[40];
+	
+	char bua[35], buc[35];
+	sprintf(setAP,"AT+CWJAP=\"%s\",\"%s\"\r\n",ssid,pass);
+	
+	
+	send_command(setAP);
+	int rsp = RFR_UART1("OK",16000);
+	
+
+	if(rsp==1)
+	{
+		
+		printString0("WiFi is  connected to :");
+		printString0(ssid);
+		printString0("\n");
+		
+	}
+	else
+	{
+		printString0("Error in connecting to :");
+		printString0(ssid);
+		printString0("\n");
+		char * p = strstr(RX_DATA_UART1,"+CWJAP:");
+		if(p!=NULL)
+		{
+			p+= strlen("+CWJAP:");
+			char error_code = *p;
+			int num = error_code-48;
+			if(num==1) printString0("Connection timeout \n");
+			if(num==2) printString0("Wrong password \n");
+			if(num==3) printString0("cannot find the target AP\n");
+			if(num==4) printString0("connection failed \n");
+	    }
+     }
+}
 void esp8266_getAP()
-{              char ssid[20];
+{              
+	           char ssid[20];
 	           send_command("AT+CWJAP?\r\n");
 	           int rsp = RFR_UART1("OK", 1000);
 	           if(rsp==1)
 	           {
-		          // printString0("command is successfully send\n");
-		           if (strstr(RX_DATA_UART1, "No AP") != NULL)
-		           printString0("No AP is connected\n");
-		           char * p = strstr(RX_DATA_UART1,"+CWJAP:");
-				  //printString0(p);
+		          
+		           if (strstr(RX_DATA_UART1, "No AP") != NULL)   printString0("No AP is connected\n");
+				   char * p = strstr(RX_DATA_UART1,"+CWJAP:");
 		           if(p!=NULL)
-		                {  // printString0("kun\n");
+		                {
 			                   p +=  strlen("+CWJAP") +2;
-					           //printString0(p);
-			                   char * q=strchr(p,'"');
+					           char * q=strchr(p,'"');
 			                   strncpy(ssid,p,q-p);
 					           printString0("Connected to Wifi:");
 			                   printString0(ssid);
 							   printString0("\n");
-					   
-		                 }
+					    }
 		           
-	           }
-			   else
+	           }else
 			   { 
-				   printString0("Error in receiving response (check the command ) or timeout has happened\n");
+				   //printString0("Error in receiving response (check the command ) or timeout has happened\n");
 	              printString0(RX_DATA_UART1);
 			   }
+			  
 }
 void esp8266_disconnect()
 {
 	
 	send_command("AT+CWQAP\r\n");
-	int rsp = RFR_UART1("OK",1000);
-		   if(rsp==1)
-		   {
-			  // printString0(RX_DATA_UART1);
-			   if (strstr(RX_DATA_UART1, "WIFI DISCONNECT") == NULL)
-			   printString0("WIFI is already disconnected \n");
-			   else
-			   printString0("WIFI is disconnected \n");
-		   }
-		   			   else
-		   			   {
-			   			   printString0("Error in receiving response (check the command ) or timeout has happened\n");
-			   			    printString0(RX_DATA_UART1);
-		   			   }
+	//printString0("Sending \n");
+	int rsp = RFR_UART1("WIFI DISCONNECT",1000);
+		   if(rsp==1) printString0("WIFI is  disconnected  \n");
+		   if(rsp==0) printString0("WIFI is already disconnected \n");
 }
-void esp8266_setAP()
+void esp8266_IPadress()
 {
-			   char setAP[40];
-			   char ssid[20] ="JioFiber 2.4ghz";
-			   char pass[20] ="Mansi5481";
-			   char bua[25], buc[25];
-			   snprintf(setAP, sizeof(setAP), "AT+CWJAP=\"%s\",\"%s\"\r\n",ssid,pass);
-			  // printString0(setAP);
-			   send_command(setAP);
-			  // getstring_UART1();
-			   int rsp = RFR_UART1("OK",6000);
-			  //int rsp=2;
-			  printString0(RX_DATA_UART1);
-			   if(rsp==1)
-			   {
-				   // printString0(RX_DATA_UART1);
-				   if (strstr(RX_DATA_UART1, "WIFI DISCONNECT") == NULL)
-				   {
-					   sprintf(bua,"WIFI is  connected to  %s", ssid);
-					   printString0(bua);
-				   }
-				   else
-				   {
-					   sprintf(buc, "WIFI is already connected to %s",ssid);
-					   printString0(buc);
-				   }
-			   }
+	char staip[20],stamac[20],apip[20],apmac[20];
+	 send_command("AT+CIFSR\r\n");
+	 int rsp = RFR_UART1("OK",1000);
+	 while(rsp==1)  
+	     { 
+			  printString0("IP address is \n");
+		        if(num==1)    //if station mode is selected
+			      {
+					    //Station IP
+					    char * p = strstr(RX_DATA_UART1,"+CIFSR:STAIP");
+			            p += strlen("+CWJAP:STAIP")+2;
+			            char * q=strchr(p,'"');
+			            strncpy(staip,p,q-p);
+						printString0("IP address of Station is :");
+						printString0(staip);
+						
+						// Station MAC
+						char * r = strstr(RX_DATA_UART1,"+CIFSR:STAMAC");
+						r += strlen("+CIFSR:STAMAC")+2;
+						char * s =strchr(r,'"');
+						strncpy(stamac,r,s-r);
+						printString0("\n Mac address of Station is :");
+						printString0(stamac);
+						break;
+				  }
+				if(num==2)
+				  {
+                        // Soft AP IP
+					    char * p = strstr(RX_DATA_UART1,"+CIFSR:APIP");
+			            p += strlen("+CIFSR:APIP")+2;
+			            char * q=strchr(p,'"');
+			            strncpy(apip,p,q-p);
+						printString0("IP address of SoftAP is :");
+						printString0(apip);
+						
+						// Soft AP MAC
+						char * r = strstr(RX_DATA_UART1,"+CIFSR:APMAC");
+						r += strlen("+CIFSR:APMAC")+2;
+						char * s =strchr(r,'"');
+						strncpy(apmac,r,s-r);
+						printString0("\n Mac address of SoftAP is :");
+						printString0(apmac);
+						break;	
+				  }
+			    if(num==3)
+				  {
+					  	//Station IP
+					  	char * p = strstr(RX_DATA_UART1,"+CIFSR:STAIP");
+						  //printString0(p);
+						  //printString0("\n");
+					  	p += strlen("+CWJAP:STAIP")+2;
+						   //printString0(p);
+						  // printString0("\n");
+					  	char * q=strchr(p,'"');
+						 // printString0(q);
+						 // printString0("\n");
+					  	strncpy(staip,p,q-p);
+					  	printString0("IP address of Station is :");
+					  	printString0(staip);
+					  	printString0("\n");
+						  
+					  	// Station MAC
+					  	char * r = strstr(RX_DATA_UART1,"+CIFSR:STAMAC");
+					  	r += strlen("+CIFSR:STAMAC")+2;
+					  	char * s =strchr(r,'"');
+					  	strncpy(stamac,r,s-r);
+					  	printString0("Mac address of Station is :");
+					  	printString0(stamac);
+					  	printString0("\n");
+						  
+						  
+						  // Soft AP IP
+					    char * a = strstr(RX_DATA_UART1,"+CIFSR:APIP");
+			            a += strlen("+CIFSR:APIP")+2;
+			            char * b=strchr(a,'"');
+			            strncpy(apip,a,b-a);
+						printString0("IP address of SoftAP is :");
+						printString0(apip);
+						printString0("\n");
+						
+						
+						// Soft AP MAC
+						char * c = strstr(RX_DATA_UART1,"+CIFSR:APMAC");
+						c += strlen("+CIFSR:APMAC")+2;
+						char * d =strchr(c,'"');
+						strncpy(apmac,c,d-c);
+						printString0("Mac address of SoftAP is :");
+						printString0(apmac);
+						printString0("\n");
+						break;
+					}
+		 }
+}
+void esp8266_connectTCPserver()
+{
+	
+				send_command("AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80\r\n");
+				int rsp = RFR_UART1("OK", 2000);
+				if(rsp==1) printString0("Successfully connected to server /n");
+				if(rsp==0) printString0("Already connected to server /n");
+}
+void esp8266_listAP()
+{
+	
+				send_command("AT+CWLAP\r\n");
+				int rsp = RFR_UART1("OK",7000);
+				//printString0(RX_DATA_UART1);
+				//printString0("\n");
+				if(rsp==0) 
+				{   
+					printString0("WiFi networks near are: \n");
+					printString0(RX_DATA_UART1);
+					printString0("\n");
+                }else
+				printString0(RX_DATA_UART1);
 }
 int main(void)
 {  
 	init_millis(16000000UL); //frequency the atmega328p is running at
    	UART_Init0();
 	UART_Init1();       ///for esp baudrate is selected 115200
-	printString0("******************hellow*****************");
+	printString0("******************ESP8266 AT Commands firmware (using embedded C)*****************");
 	printString0("\n");
+	//printString0("kunal\n");
+	//printString0("gupta\n");
 
     sei();
 	
@@ -319,39 +430,36 @@ int c=0;
 	while(1)
 	{
 		
-		if(c<0)
+		if(c<1)
 		{  
-           esp8266_getmode();
+          esp8266_getmode();
 		  esp8266_connectiontype();
 		  esp8266_getAP();
-           esp8266_disconnect();
-		   //esp8266_setAP();
-           c++;
+		   esp8266_setAP("JioFiber 2.4ghz","Mansi5481");
+		  //esp8266_disconnect();
+          esp8266_listAP();
+		  esp8266_IPadress();
+         c++;
 		   
 		}
 		
-		if(c<1)
-		{
-			send_command("AT+GMR\r\n");
-			getstring_UART1();
+		if(c<0)
+		{  
+		
 			
 			//printString0(RFR_UART1("OK", 1000));
 			//printString0("\n");
 			_delay_ms(100);
 			
 			send_command("AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80\r\n");
-			//printString1("AT+CIPSTART=\"TCP\",\"api.openweathermap.org\",80\r\n");
-			getstring_UART1();
-		    //UART_TxChar0(RFR_UART1("ERROR", 1000));
-			//printString0("\n");
-			//_delay_ms(100);
-			printString0(RX_DATA_UART1);
+		     int rsp = RFR_UART1("OK", 3000);
+			if(rsp==1) printString0("Successfully connected to server \n");
+			if(rsp==0) printString0("Already connected to server \n");
 			
 			send_command("AT+CIPSEND=47\r\n");
 			//printString1("AT+CIPSEND=70\r\n");
-			getstring_UART1();
-			//UART_TxChar0(RFR_UART1("OK", 1000));
-			//printString0("\n");
+			rsp = RFR_UART1(">",1000);
+			if (rsp==1) printString0(RX_DATA_UART1);
 			//_delay_ms(100);
 			
 			
@@ -369,5 +477,8 @@ int c=0;
 		}
 	}
 
+//printString0("zzzz\n");
+
 }
+
 
