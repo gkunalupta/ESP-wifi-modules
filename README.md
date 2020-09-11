@@ -125,3 +125,19 @@ GET /test/comm/sens.php?key=f46fa009d3c6902ea2a805567c7ed4&val1=01&val2=02&val3=
 
 
 
+for webserver
+# Arduino
+https://www.electronicwings.com/nodemcu/http-server-on-nodemcu-with-arduino-ide
+https://circuits4you.com/2016/12/16/esp8266-web-server-html/
+https://lastminuteengineers.com/creating-esp8266-web-server-arduino-ide/
+https://create.arduino.cc/projecthub/harshmangukiya/create-esp8266-web-server-9c32ac#:~:text=About%20this%20project.%201%20Step%201%3A%20Circuit%20Time.,3%20Step%203%3A%20Upload%20code%20to%20ESP8266.%20
+https://www.survivingwithandroid.com/esp8266-web-server/
+https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/readme.html
+https://diyprojects.io/esp8266-web-server-tutorial-create-html-interface-connected-object/
+https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi
+
+
+# github for Arduino 
+https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WebServer/README.rst
+https://links2004.github.io/Arduino/d3/d58/class_e_s_p8266_web_server.html#afa3b6624fd441f8ca8e7973a57e6585b
+https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi
