@@ -1,1 +1,1 @@
-
+This repo Conatins my work done for understanding and making AT Commands firmware For ESP modules by both Bare_metal_programming(using Embedded c, c and making my own libraries) and Arduino IDE provided libraries 
