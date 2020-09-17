@@ -125,8 +125,11 @@ GET /test/comm/sens.php?key=f46fa009d3c6902ea2a805567c7ed4&val1=01&val2=02&val3=
 
 
 
+
+
+
 for webserver
-# Arduino
+# ArduinoIDE(Using esp8266)
 https://www.electronicwings.com/nodemcu/http-server-on-nodemcu-with-arduino-ide
 https://circuits4you.com/2016/12/16/esp8266-web-server-html/
 https://lastminuteengineers.com/creating-esp8266-web-server-arduino-ide/
@@ -135,6 +138,21 @@ https://www.survivingwithandroid.com/esp8266-web-server/
 https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/readme.html
 https://diyprojects.io/esp8266-web-server-tutorial-create-html-interface-connected-object/
 https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi
+
+# esp8266-AT
+https://randomnerdtutorials.com/esp8266-dht11dht22-temperature-and-humidity-web-server-with-arduino-ide/
+https://www.omnisecu.com/tcpip/http-hypertext-transfer-protocol-what-is-http.php
+https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Request_fields
+http://cactus.io/tutorials/arduino/web-server-software
+https://www.gadgetronicx.com/arduino-web-server-esp8266-wifi/#:~:text=ESP%20COMMANDS%20USED%20FOR%20CREATING%20ARDUINO%20WEB%20SERVER%3A&text=%E2%80%9CAT%2BCIPSTA%3D%3CLocal,is%20compatible%20with%20your%20device.
+
+https://randomnerdtutorials.com/esp8266-dht11dht22-temperature-and-humidity-web-server-with-arduino-ide/
+https://www.omnisecu.com/tcpip/http-hypertext-transfer-protocol-what-is-http.php
+https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Request_fields
+http://cactus.io/tutorials/arduino/web-server-software
+https://www.gadgetronicx.com/arduino-web-server-esp8266-wifi/#:~:text=ESP%20COMMANDS%20USED%20FOR%20CREATING%20ARDUINO%20WEB%20SERVER%3A&text=%E2%80%9CAT%2BCIPSTA%3D%3CLocal,is%20compatible%20with%20your%20device.
+
+
 
 
 # github for Arduino 
